@@ -90,7 +90,7 @@ gradlew.bat lwjgl3:run
 
 ## Documentación
 
-La documentación del proyecto se encuentra en la [**Wiki**](https://github.com/Manuel-Coggiola-Molinari/God-of-War-Origins.wiki.git) del repositorio.
+La documentación del proyecto se encuentra en la [**Wiki**](https://github.com/Manuel-Coggiola-Molinari/God-of-War-Origins/wiki) del repositorio.
 
 ---
 
