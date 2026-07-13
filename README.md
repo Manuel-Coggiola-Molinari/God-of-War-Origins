@@ -1,12 +1,12 @@
 # God of War Origins
 
-Proyecto final de **Laboratorio y Programación** desarrollado en **Java** utilizando **LibGDX**.
+Proyecto final de **Programación sobre Redes** desarrollado en **Java** utilizando **LibGDX**.
 
 ## Descripción
 
 **God of War Origins** es un videojuego cooperativo de supervivencia en 2D con perspectiva cenital, inspirado en la mitología nórdica y ambientado en el período previo a los acontecimientos de *God of War (2018)*.
 
-Los jugadores controlan a **Kratos** y **Laufey**, quienes deberán explorar Midgard, recolectar recursos, construir estructuras, enfrentarse a enemigos y colaborar para fortalecer una barrera mágica que protege su hogar. El juego podrá disfrutarse tanto en modo individual como cooperativo mediante una red local, siendo la implementación de la comunicación en red uno de los ejes principales del proyecto. :contentReference[oaicite:1]{index=1}
+Los jugadores controlan a **Kratos** y **Laufey**, quienes deberán explorar Midgard, recolectar recursos, construir estructuras, enfrentarse a enemigos y colaborar para fortalecer una barrera mágica que protege su hogar. El juego podrá disfrutarse tanto en modo individual como cooperativo mediante una red local, siendo la implementación de la comunicación en red uno de los ejes principales del proyecto.
 
 ---
 
@@ -47,7 +47,7 @@ Los jugadores controlan a **Kratos** y **Laufey**, quienes deberán explorar Mid
 
 ### En desarrollo.
 
-Actualmente el repositorio contiene la estructura inicial del proyecto generada con LibGDX. Durante las siguientes etapas se incorporarán progresivamente los sistemas de movimiento, combate, construcción, inteligencia artificial, comunicación en red y progresión principal. :contentReference[oaicite:2]{index=2}
+Actualmente el repositorio contiene la estructura inicial del proyecto generada con LibGDX. Durante las siguientes etapas se incorporarán progresivamente los sistemas de movimiento, combate, construcción, inteligencia artificial, comunicación en red y progresión principal.
 
 ---
 
@@ -96,4 +96,4 @@ La documentación del proyecto se encuentra en la [**Wiki**](https://github.com/
 
 ## Licencia
 
-Proyecto desarrollado con fines educativos para la materia **Laboratorio y Programación**.
+Proyecto desarrollado con fines educativos para la materia **Programación sobre Redes**.
