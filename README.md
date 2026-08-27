@@ -55,7 +55,7 @@ Actualmente el repositorio contiene la estructura inicial del proyecto generada 
 
 ### Requisitos
 
-- Java JDK 21 o superior
+- Java JDK 21
 - IntelliJ IDEA (recomendado)
 
 ### Clonar el repositorio
