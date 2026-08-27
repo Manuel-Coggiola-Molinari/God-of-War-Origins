@@ -25,13 +25,13 @@ Los jugadores controlan a **Kratos** y **Laufey**, quienes deberán explorar Mid
 
 ---
 
-## Tecnologías
+## Tecnologías y Plataforma
 
-- Java 21 LTS
-- LibGDX 1.13.5
+- Java 21 (JDK 21)
+- Plataforma Objetivo: Escritorio (Desktop - Windows, macOS, Linux)
+- LibGDX 1.13.5 (módulo Lwjgl3)
 - Gradle
-- Git
-- GitHub
+- Git / GitHub
 - IntelliJ IDEA
 
 ---
