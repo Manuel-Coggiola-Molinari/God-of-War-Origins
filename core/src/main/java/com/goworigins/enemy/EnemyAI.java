@@ -1,0 +1,82 @@
+package com.goworigins.enemy;
+
+import com.goworigins.player.Player;
+import com.goworigins.collision.CollisionManager;
+import com.goworigins.building.BuildingSystem;
+
+public class EnemyAI {
+
+    private EnemyState currentState = EnemyState.IDLE;
+    private final float detectionRange = 300f;
+    private final float movementSpeed = 80f;
+    private final float attackRange = 60f;
+    private final int attackDamage = 10;
+    private float attackCooldown = 1f;
+    private float attackTimer = 0f;
+
+    private final CollisionManager collisionManager;
+    private final BuildingSystem buildingSystem;
+
+    public EnemyAI( CollisionManager collisionManager, BuildingSystem buildingSystem ) {
+        this.collisionManager = collisionManager;
+        this.buildingSystem = buildingSystem;
+    }
+    public void update(Enemy enemy, Player player, float delta) {
+
+        if (!player.isAlive()) {
+            currentState = EnemyState.IDLE;
+            return;
+        }
+
+        float dx = player.getX() - enemy.getX();
+        float dy = player.getY() - enemy.getY();
+
+        float distance = (float) Math.sqrt(
+            dx * dx + dy * dy
+        );
+
+        attackTimer -= delta;
+
+        if (distance > detectionRange) {
+            currentState = EnemyState.IDLE;
+            return;
+        }
+
+        if (distance <= attackRange) {
+            currentState = EnemyState.ATTACK;
+
+            if (attackTimer <= 0) {
+
+                player.takeDamage(attackDamage);
+                System.out.println(
+                    "Vida del jugador: " + player.getHealth()
+                );
+                attackTimer = attackCooldown;
+            }
+            return;
+        }
+
+        currentState = EnemyState.CHASE;
+
+        float directionX = dx / distance;
+        float directionY = dy / distance;
+
+        float deltaX = directionX * movementSpeed * delta;
+        float deltaY = directionY * movementSpeed * delta;
+
+        float newX = enemy.getX() + deltaX;
+
+        if (collisionManager.canMoveTo( newX, enemy.getY(), enemy.getWidth(), enemy.getHeight() )
+            && buildingSystem.canMoveTo( newX, enemy.getY(), enemy.getWidth(), enemy.getHeight() ))
+        {   enemy.move(deltaX, 0);   }
+
+        float newY = enemy.getY() + deltaY;
+
+        if (collisionManager.canMoveTo( enemy.getX(), newY, enemy.getWidth(), enemy.getHeight() )
+            && buildingSystem.canMoveTo( enemy.getX(), newY, enemy.getWidth(), enemy.getHeight() ))
+        {   enemy.move(0, deltaY);   }
+    }
+    public EnemyState getCurrentState() {
+        return currentState;
+    }
+}
