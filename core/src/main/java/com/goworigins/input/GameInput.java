@@ -40,12 +40,10 @@ public class GameInput extends InputAdapter {
     }
 
     public boolean consumeBuild() {
-
         if (buildPressed) {
             buildPressed = false;
             return true;
         }
-
         return false;
     }
 
@@ -91,20 +89,17 @@ public class GameInput extends InputAdapter {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-
         if (button == Input.Buttons.LEFT) {
             attackPressed = true;
         }
-
         return true;
     }
-    public boolean consumeAttack() {
 
+    public boolean consumeAttack() {
         if (attackPressed) {
             attackPressed = false;
             return true;
         }
-
         return false;
     }
 }
