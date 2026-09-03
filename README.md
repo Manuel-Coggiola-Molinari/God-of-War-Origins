@@ -10,18 +10,41 @@ Los jugadores controlan a **Kratos** y **Laufey**, quienes deberán explorar Mid
 
 ---
 
-## Características principales
+## Estado del proyecto
 
-- Modo individual y cooperativo.
-- Arquitectura cliente-servidor.
-- Comunicación mediante TCP y UDP.
-- Exploración de un mundo 2D.
-- Sistema de combate en tiempo real.
-- Recolección de recursos.
-- Construcción de estructuras.
+### Prototipo jugable (Pre-entrega N°2)
+
+El proyecto cuenta actualmente con un prototipo jugable en modo individual, con las siguientes características implementadas:
+
+- Movimiento del personaje con detección de colisiones contra el mapa y las estructuras.
+- Animaciones del personaje (idle, caminar, atacar, morir) basadas en spritesheets.
+- Combate en tiempo real contra un enemigo con inteligencia artificial básica.
+- Sistema de construcción de estructuras.
+- Mapa cargado desde Tiled.
+- Cámara que sigue al jugador, adaptada a distintos tamaños de ventana.
+- HUD con barra de vida propia y del enemigo.
+- Gestión de pantallas: menú inicial, juego, pausa y game over.
+
+### Planificado (próximas etapas)
+
+- Modo cooperativo mediante arquitectura cliente-servidor (TCP/UDP).
+- Segundo personaje jugable (Laufey).
 - Inventario y comercio.
-- Inteligencia artificial para enemigos.
 - Progresión basada en objetivos.
+- Música y efectos de sonido.
+
+---
+
+## Controles
+
+| Acción | Tecla |
+|---|---|
+| Mover personaje | W A S D |
+| Atacar | Click izquierdo |
+| Construir | E |
+| Pausar / Reanudar | ESC |
+| Navegar menú | W / S o flechas |
+| Confirmar opción de menú | ENTER |
 
 ---
 
@@ -43,14 +66,6 @@ Los jugadores controlan a **Kratos** y **Laufey**, quienes deberán explorar Mid
 
 ---
 
-## Estado del proyecto
-
-### En desarrollo.
-
-Actualmente el repositorio contiene la estructura inicial del proyecto generada con LibGDX. Durante las siguientes etapas se incorporarán progresivamente los sistemas de movimiento, combate, construcción, inteligencia artificial, comunicación en red y progresión principal.
-
----
-
 ## Instalación
 
 ### Requisitos
@@ -66,15 +81,14 @@ git clone https://github.com/Manuel-Coggiola-Molinari/God-of-War-Origins.git
 
 ### Ejecutar
 
+**Opción 1 (recomendada) — desde IntelliJ:**
+
 1. Abrir el proyecto con IntelliJ IDEA.
 2. Esperar a que Gradle descargue las dependencias.
-3. Ejecutar la clase:
+3. Buscar el archivo `lwjgl3/src/main/java/com/goworigins/lwjgl3/Lwjgl3Launcher.java`.
+4. Click derecho sobre el archivo → **Run 'Lwjgl3Launcher.main()'**.
 
-```
-lwjgl3/src/main/java/com/goworigins/lwjgl3/Lwjgl3Launcher.java
-```
-
-También puede ejecutarse desde la terminal con:
+**Opción 2 — desde la terminal:**
 
 ```bash
 ./gradlew lwjgl3:run
@@ -85,6 +99,12 @@ En Windows:
 ```bash
 gradlew.bat lwjgl3:run
 ```
+
+---
+
+## Video de demostración
+
+[Enlace al video](PENDIENTE)
 
 ---
 
