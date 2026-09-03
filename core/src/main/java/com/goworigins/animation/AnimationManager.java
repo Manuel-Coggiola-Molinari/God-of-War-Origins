@@ -29,6 +29,40 @@ public class AnimationManager {
         this.frameDuration = frameDuration;
     }
 
+    public AnimationManager(
+        String spritesheetPath,
+        int frameWidth,
+        int frameHeight,
+        float frameDuration
+    ) {
+
+        Texture texture = new Texture(spritesheetPath);
+
+        TextureRegion[][] tmp =
+            TextureRegion.split(
+                texture,
+                frameWidth,
+                frameHeight
+            );
+
+        int rows = tmp.length;
+        int columns = tmp[0].length;
+
+        frames = new TextureRegion[rows * columns];
+
+        int index = 0;
+
+        for (int row = 0; row < rows; row++) {
+
+            for (int column = 0; column < columns; column++) {
+
+                frames[index++] = tmp[row][column];
+            }
+        }
+
+        this.frameDuration = frameDuration;
+    }
+
     public void update(float delta) {
         stateTime += delta;
     }

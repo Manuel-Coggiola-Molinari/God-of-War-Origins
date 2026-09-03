@@ -31,28 +31,14 @@ public class PlayerRenderer {
 
         if (frame != null) {
 
-            /*
-             * Tamaño normal del personaje.
-             */
             float width = 100;
             float height = 100;
 
-            /*
-             * La animación de muerte puede ocupar un poco
-             * más de espacio para que se vea correctamente.
-             */
-            if (
-                animations.getCurrentState()
-                    == AnimationState.DEATH
-            ) {
+            if (animations.getCurrentState() == AnimationState.DEATH) {
                 width = 120;
                 height = 120;
             }
 
-            /*
-             * Creamos una copia del frame para poder
-             * invertirlo sin modificar el frame original.
-             */
             TextureRegion drawFrame =
                 new TextureRegion(frame);
 
@@ -60,13 +46,6 @@ public class PlayerRenderer {
                 drawFrame.flip(true, false);
             }
 
-            /*
-             * El jugador tiene una posición de referencia
-             * en su hitbox de 50x50.
-             *
-             * Calculamos el centro y dibujamos el sprite
-             * desde ahí para que quede centrado.
-             */
             float playerCenterX =
                 player.getX() + 25;
 

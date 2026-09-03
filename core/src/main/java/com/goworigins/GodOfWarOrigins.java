@@ -3,6 +3,7 @@ package com.goworigins;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Gdx;
+import com.goworigins.animation.EnemyAnimationState;
 import com.goworigins.input.GameInput;
 import com.goworigins.player.Player;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.goworigins.render.EnemyRenderer;
 import com.goworigins.render.PlayerRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -23,6 +25,7 @@ import com.goworigins.building.Building;
 import com.goworigins.building.BuildingSystem;
 import com.goworigins.animation.AnimationState;
 import com.goworigins.animation.PlayerAnimations;
+import com.goworigins.audio.AudioManager;
 
 import java.util.List;
 
@@ -40,6 +43,7 @@ public class GodOfWarOrigins extends ApplicationAdapter {
 
     private PlayerRenderer playerRenderer;
     private SpriteBatch batch;
+    private EnemyRenderer enemyRenderer;
 
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
@@ -64,6 +68,8 @@ public class GodOfWarOrigins extends ApplicationAdapter {
     private BuildingSystem buildingSystem;
     private PlayerAnimations playerAnimations;
 
+    private AudioManager audioManager;
+
     @Override
     public void create() {
 
@@ -76,10 +82,11 @@ public class GodOfWarOrigins extends ApplicationAdapter {
 
         gameHUD = new GameHUD(shapeRenderer);
 
-        playerRenderer = new PlayerRenderer(
-            shapeRenderer,
-            batch
-        );
+        audioManager = new AudioManager();
+
+        playerRenderer = new PlayerRenderer(shapeRenderer, batch);
+
+        enemyRenderer = new EnemyRenderer(batch);
 
         TmxMapLoader mapLoader = new TmxMapLoader();
 
@@ -183,14 +190,11 @@ public class GodOfWarOrigins extends ApplicationAdapter {
         if (player.isAlive()) {
 
             if (
-                playerAnimations.getCurrentState()
-                    != AnimationState.ATTACK
+                playerAnimations.getCurrentState() != AnimationState.ATTACK &&
+                    playerAnimations.getCurrentState() != AnimationState.DAMAGE
             ) {
 
-                if (
-                    movementX != 0 ||
-                        movementY != 0
-                ) {
+                if (movementX != 0 || movementY != 0) {
 
                     playerAnimations.setState(
                         AnimationState.WALK
@@ -355,10 +359,7 @@ public class GodOfWarOrigins extends ApplicationAdapter {
         // IA DEL ENEMIGO
         // =====================================================
 
-        if (
-            enemy.isAlive() &&
-                player.isAlive()
-        ) {
+        if (enemy.isAlive()) {
 
             enemyAI.update(
                 enemy,
@@ -367,11 +368,35 @@ public class GodOfWarOrigins extends ApplicationAdapter {
             );
         }
 
+        enemy.updateAnimations(delta);
+
+        if (player.consumeDamage()) {
+
+            if (player.isAlive()) {
+
+                playerAnimations.setState(
+                    AnimationState.DAMAGE
+                );
+            }
+        }
+
+        combatSystem.update(delta);
+
         // =====================================================
         // COMBATE
         // =====================================================
 
-        combatSystem.update(delta);
+        if (gameInput.consumeMute()) {
+            audioManager.toggleMute();
+        }
+
+        if (gameInput.consumeVolumeUp()) {
+            audioManager.increaseVolume();
+        }
+
+        if (gameInput.consumeVolumeDown()) {
+            audioManager.decreaseVolume();
+        }
 
         if (
             player.isAlive() &&
@@ -381,6 +406,8 @@ public class GodOfWarOrigins extends ApplicationAdapter {
             playerAnimations.setState(
                 AnimationState.ATTACK
             );
+
+            audioManager.playAttackSound();
 
             combatSystem.attack(
                 player,
@@ -393,6 +420,13 @@ public class GodOfWarOrigins extends ApplicationAdapter {
                 "Vida del enemigo: "
                     + enemy.getHealth()
             );
+
+            if (!enemy.isAlive()) {
+
+                enemy.getAnimations().setState(
+                    EnemyAnimationState.DEATH
+                );
+            }
         }
 
         // =====================================================
@@ -539,23 +573,10 @@ public class GodOfWarOrigins extends ApplicationAdapter {
 
         if (enemy.isAlive()) {
 
-            shapeRenderer.setColor(
-                1,
-                0,
-                0,
-                1
-            );
-
-            shapeRenderer.rect(
-                enemy.getX(),
-                enemy.getY(),
-                enemy.getWidth(),
-                enemy.getHeight()
-            );
-
             gameHUD.renderEnemyHealth(
                 enemy
             );
+            shapeRenderer.end();
         }
 
         List<Building> buildings =
@@ -584,15 +605,13 @@ public class GodOfWarOrigins extends ApplicationAdapter {
         // JUGADOR - SPRITE
         // =====================================================
 
-        batch.setProjectionMatrix(
-            camera.combined
-        );
+        batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
 
-        playerRenderer.render(
-            player
-        );
+        enemyRenderer.render(enemy);
+
+        playerRenderer.render(player);
 
         batch.end();
 
@@ -600,9 +619,7 @@ public class GodOfWarOrigins extends ApplicationAdapter {
         // HUD
         // =====================================================
 
-        shapeRenderer.setProjectionMatrix(
-            hudCamera.combined
-        );
+        shapeRenderer.setProjectionMatrix(hudCamera.combined);
 
         shapeRenderer.begin(
             ShapeRenderer.ShapeType.Filled
@@ -644,5 +661,7 @@ public class GodOfWarOrigins extends ApplicationAdapter {
         shapeRenderer.dispose();
 
         map.dispose();
+
+        audioManager.dispose();
     }
 }

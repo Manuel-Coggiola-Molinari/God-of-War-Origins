@@ -5,6 +5,7 @@ public class PlayerAnimations {
     private AnimationManager idle;
     private AnimationManager walk;
     private AnimationManager attack;
+    private AnimationManager damage;
     private AnimationManager death;
 
     private AnimationState currentState;
@@ -16,17 +17,10 @@ public class PlayerAnimations {
         };
         setIdle(new AnimationManager(idleFrames, 0.15f));
 
-        String[] walkFrames = {
-            "assets/sprites/Characters/Kratos/walk/walk.png",
-            "assets/sprites/Characters/Kratos/walk/walk1.png",
-            "assets/sprites/Characters/Kratos/walk/walk2.png",
-            "assets/sprites/Characters/Kratos/walk/walk3.png",
-            "assets/sprites/Characters/Kratos/walk/walk4.png",
-            "assets/sprites/Characters/Kratos/walk/walk5.png",
-            "assets/sprites/Characters/Kratos/walk/walk6.png",
-            "assets/sprites/Characters/Kratos/walk/walk7.png"
-        };
-        setWalk(new AnimationManager(walkFrames, 0.15f));
+        AnimationManager walkAnimation = new AnimationManager(
+                "assets/sprites/Characters/Kratos/walk/walk.png",
+                85, 100, 0.15f);
+        setWalk(walkAnimation);
 
         String[] attackFrames = {
             "assets/sprites/Characters/Kratos/attack/attack1.png",
@@ -36,23 +30,26 @@ public class PlayerAnimations {
             "assets/sprites/Characters/Kratos/attack/attack5.png"
         };
         AnimationManager attackAnimation = new AnimationManager(attackFrames, 0.1f);
-
         attackAnimation.setLooping(false);
-
         setAttack(attackAnimation);
+
+        String[] damageFrames = { "assets/sprites/Characters/Kratos/damage/damage.png" };
+
+        AnimationManager damageAnimation = new AnimationManager(damageFrames, 0.5f);
+        damageAnimation.setLooping(false);
+        setDamage(damageAnimation);
 
         String[] deathFrames = { "assets/sprites/Characters/Kratos/death/death.png" };
 
         AnimationManager deathAnimation = new AnimationManager(deathFrames, 0.15f);
-
         deathAnimation.setLooping(false);
-
         setDeath(deathAnimation);
     }
 
     public void setIdle(AnimationManager animation) { idle = animation; }
     public void setWalk(AnimationManager animation) { walk = animation; }
     public void setAttack(AnimationManager animation) { attack = animation; }
+    public void setDamage(AnimationManager animation) { damage = animation; }
     public void setDeath(AnimationManager animation) { death = animation; }
     public void setState(AnimationState state) {
 
@@ -77,6 +74,9 @@ public class PlayerAnimations {
             case ATTACK:
                 return attack;
 
+            case DAMAGE:
+                return damage;
+
             case DEATH:
                 return death;
 
@@ -98,6 +98,9 @@ public class PlayerAnimations {
             animation.update(delta);
 
             if (currentState == AnimationState.ATTACK && animation.isFinished())
+            { setState(AnimationState.IDLE); }
+
+            if (currentState == AnimationState.DAMAGE && animation.isFinished())
             { setState(AnimationState.IDLE); }
         }
     }

@@ -11,6 +11,7 @@ public class Player {
     private PlayerAnimation animation;
 
     private int health = 100;
+    private boolean damaged = false;
 
     public Player(float x, float y, float speed) {
         this.x = x;
@@ -52,11 +53,21 @@ public class Player {
     }
 
     public void takeDamage(int damage) {
+
         health -= damage;
 
-        if (health < 0) {
-            health = 0;
-        }
+        if (health < 0)
+        { health = 0; }
+
+        damaged = true;
+    }
+    public boolean consumeDamage() {
+
+        if (damaged) {
+            damaged = false;
+            return true; }
+
+        return false;
     }
 
     public int getHealth() {

@@ -1,5 +1,6 @@
 package com.goworigins.enemy;
 
+import com.goworigins.animation.EnemyAnimationState;
 import com.goworigins.player.Player;
 import com.goworigins.collision.CollisionManager;
 import com.goworigins.building.BuildingSystem;
@@ -31,32 +32,47 @@ public class EnemyAI {
         float dx = player.getX() - enemy.getX();
         float dy = player.getY() - enemy.getY();
 
-        float distance = (float) Math.sqrt(
-            dx * dx + dy * dy
-        );
-
-        attackTimer -= delta;
+        float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
         if (distance > detectionRange) {
-            currentState = EnemyState.IDLE;
+
+            enemy.getAnimations().setState(
+                EnemyAnimationState.IDLE
+            );
+
             return;
         }
+        attackTimer -= delta;
 
         if (distance <= attackRange) {
-            currentState = EnemyState.ATTACK;
+
+            if (enemy.getAnimations().getCurrentState() != EnemyAnimationState.DAMAGE) {
+
+                enemy.getAnimations().setState(EnemyAnimationState.ATTACK);
+            }
 
             if (attackTimer <= 0) {
 
                 player.takeDamage(attackDamage);
+
                 System.out.println(
-                    "Vida del jugador: " + player.getHealth()
+                    "Vida del jugador: "
+                        + player.getHealth()
                 );
+
                 attackTimer = attackCooldown;
             }
+
             return;
         }
 
         currentState = EnemyState.CHASE;
+
+        if (distance > attackRange) {
+            if (enemy.getAnimations().getCurrentState() != EnemyAnimationState.DAMAGE) {
+
+                enemy.getAnimations().setState(EnemyAnimationState.WALK);
+            }}
 
         float directionX = dx / distance;
         float directionY = dy / distance;
