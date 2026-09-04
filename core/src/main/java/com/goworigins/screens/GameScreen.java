@@ -20,6 +20,7 @@ import com.goworigins.animation.PlayerAnimations;
 import com.goworigins.audio.AudioManager;
 import com.goworigins.building.Building;
 import com.goworigins.building.BuildingSystem;
+import com.goworigins.render.BuildingRenderer;
 import com.goworigins.collision.CollisionManager;
 import com.goworigins.combat.CombatSystem;
 import com.goworigins.enemy.Enemy;
@@ -71,6 +72,7 @@ public class GameScreen implements Screen {
     private OrthographicCamera hudCamera;
 
     private BuildingSystem buildingSystem;
+    private BuildingRenderer buildingRenderer;
     private PlayerAnimations playerAnimations;
 
     private AudioManager audioManager;
@@ -109,7 +111,7 @@ public class GameScreen implements Screen {
         // AUDIO
         // =====================================================
 
-        audioManager = new AudioManager();
+        audioManager = new AudioManager("audio/music/background.mp3");
 
         // =====================================================
         // MAPA
@@ -176,7 +178,7 @@ public class GameScreen implements Screen {
         combatSystem = new CombatSystem();
 
         buildingSystem = new BuildingSystem();
-
+        buildingRenderer = new BuildingRenderer(batch);
         // =====================================================
         // ENEMIGO
         // =====================================================
@@ -187,10 +189,7 @@ public class GameScreen implements Screen {
             100
         );
 
-        enemyAI = new EnemyAI(
-            collisionManager,
-            buildingSystem
-        );
+        enemyAI = new EnemyAI(collisionManager, buildingSystem, enemyRenderer);
     }
 
     @Override
@@ -423,10 +422,11 @@ public class GameScreen implements Screen {
                 gameInput.consumeBuild()
         ) {
 
-            buildingSystem.build(
-                player,
-                collisionManager
-            );
+            boolean built = buildingSystem.build(player, collisionManager);
+
+            if (built) {
+                audioManager.playBuildSound();
+            }
         }
 
         // =====================================================
@@ -454,12 +454,12 @@ public class GameScreen implements Screen {
 
         if (player.consumeDamage()) {
 
-            if (player.isAlive()) {
+            playerAnimations.setState(
+                AnimationState.DAMAGE
+            );
 
-                playerAnimations.setState(
-                    AnimationState.DAMAGE
-                );
-            }
+            audioManager.playPlayerHitSound();
+            audioManager.playEnemyAttackSound();
         }
 
         // =====================================================
@@ -491,6 +491,10 @@ public class GameScreen implements Screen {
         // ATAQUE
         // =====================================================
 
+        // =====================================================
+// ATAQUE
+// =====================================================
+
         if (
             player.isAlive()
                 &&
@@ -503,12 +507,21 @@ public class GameScreen implements Screen {
 
             audioManager.playAttackSound();
 
-            combatSystem.attack(
+            boolean hit = combatSystem.attack(
                 player,
                 enemy,
-                facingX,
-                facingY
+                player.getDirectionX(),
+                player.getDirectionY()
             );
+
+            if (hit) {
+
+                audioManager.playEnemyHitSound();
+
+                if (!enemy.isAlive()) {
+                    audioManager.playEnemyDeathSound();
+                }
+            }
 
             System.out.println(
                 "Vida del enemigo: "
@@ -597,7 +610,7 @@ public class GameScreen implements Screen {
         // =====================================================
         // LIMPIAR PANTALLA
         // =====================================================
-
+        viewport.apply(false);
         Gdx.gl.glViewport(
             0,
             0,
@@ -611,8 +624,6 @@ public class GameScreen implements Screen {
             0.2f,
             1f
         );
-
-        viewport.apply(true);
 
         // =====================================================
         // MAPA
@@ -686,27 +697,7 @@ public class GameScreen implements Screen {
             );
         }
 
-        List<Building> buildings =
-            buildingSystem.getBuildings();
-
-        for (
-            Building building : buildings
-        ) {
-
-            shapeRenderer.setColor(
-                0.5f,
-                0.5f,
-                0.5f,
-                1
-            );
-
-            shapeRenderer.rect(
-                building.getX(),
-                building.getY(),
-                building.getWidth(),
-                building.getHeight()
-            );
-        }
+        List<Building> buildings = buildingSystem.getBuildings();
 
         shapeRenderer.end();
 
@@ -719,6 +710,10 @@ public class GameScreen implements Screen {
         );
 
         batch.begin();
+
+        for (Building building : buildings) {
+            buildingRenderer.render(building);
+        }
 
         enemyRenderer.render(
             enemy
@@ -811,7 +806,7 @@ public class GameScreen implements Screen {
         shapeRenderer.dispose();
 
         map.dispose();
-
+        buildingRenderer.dispose();
         audioManager.dispose();
     }
 }

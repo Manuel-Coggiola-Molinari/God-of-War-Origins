@@ -15,7 +15,7 @@ public class CombatSystem {
     private float attackCooldown = 0.4f;
     private float cooldownTimer = 0f;
 
-    public void attack(
+    public boolean attack(
         Player player,
         Enemy enemy,
         float directionX,
@@ -23,7 +23,7 @@ public class CombatSystem {
     ) {
 
         if (cooldownTimer > 0 || attacking) {
-            return;
+            return false;
         }
 
         attacking = true;
@@ -51,8 +51,13 @@ public class CombatSystem {
         );
 
         if (attackArea.overlaps(enemyArea)) {
+
             enemy.takeDamage(kratosDamage);
+
+            return true;
         }
+
+        return false;
     }
     public void update(float delta) {
 

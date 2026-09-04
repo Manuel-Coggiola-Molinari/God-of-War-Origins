@@ -48,6 +48,36 @@ public class Player {
         return animation.getDirection();
     }
 
+    public float getDirectionX() {
+
+        switch (animation.getDirection()) {
+
+            case LEFT:
+                return -1f;
+
+            case RIGHT:
+                return 1f;
+
+            default:
+                return 0f;
+        }
+    }
+
+    public float getDirectionY() {
+
+        switch (animation.getDirection()) {
+
+            case DOWN:
+                return -1f;
+
+            case UP:
+                return 1f;
+
+            default:
+                return 0f;
+        }
+    }
+
     public void update(float delta) {
         animation.update(delta);
     }

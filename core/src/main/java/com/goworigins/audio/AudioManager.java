@@ -7,21 +7,51 @@ import com.badlogic.gdx.audio.Sound;
 public class AudioManager {
 
     private Music backgroundMusic;
+
     private Sound attackSound;
+    private Sound buildSound;
+
+    private Sound playerHitSound;
+    private Sound enemyAttackSound;
+    private Sound enemyHitSound;
+    private Sound enemyDeathSound;
 
     private float volume = 1f;
     private boolean muted = false;
 
-    public AudioManager() {
+    public AudioManager(String musicPath) {
 
         backgroundMusic =
-            Gdx.audio.newMusic(
-                Gdx.files.internal("audio/music/background.mp3")
-            );
+            Gdx.audio.newMusic(Gdx.files.internal(musicPath));
 
         attackSound =
             Gdx.audio.newSound(
-                Gdx.files.internal("audio/sfx/attack.wav")
+                Gdx.files.internal("audio/sfx/characters/kratos/attack.wav")
+            );
+
+        buildSound =
+            Gdx.audio.newSound(
+                Gdx.files.internal("audio/sfx/builds/shelter.wav")
+            );
+
+        playerHitSound =
+            Gdx.audio.newSound(
+                Gdx.files.internal("audio/sfx/characters/kratos/damage.wav")
+            );
+
+        enemyAttackSound =
+            Gdx.audio.newSound(
+                Gdx.files.internal("audio/sfx/enemies/draugr/attack.wav")
+            );
+
+        enemyHitSound =
+            Gdx.audio.newSound(
+                Gdx.files.internal("audio/sfx/enemies/draugr/damage.wav")
+            );
+
+        enemyDeathSound =
+            Gdx.audio.newSound(
+                Gdx.files.internal("audio/sfx/enemies/draugr/death.wav")
             );
 
         backgroundMusic.setLooping(true);
@@ -30,9 +60,38 @@ public class AudioManager {
     }
 
     public void playAttackSound() {
-
         if (!muted) {
             attackSound.play(volume);
+        }
+    }
+
+    public void playBuildSound() {
+        if (!muted) {
+            buildSound.play(volume);
+        }
+    }
+
+    public void playPlayerHitSound() {
+        if (!muted) {
+            playerHitSound.play(volume);
+        }
+    }
+
+    public void playEnemyAttackSound() {
+        if (!muted) {
+            enemyAttackSound.play(volume);
+        }
+    }
+
+    public void playEnemyHitSound() {
+        if (!muted) {
+            enemyHitSound.play(volume);
+        }
+    }
+
+    public void playEnemyDeathSound() {
+        if (!muted) {
+            enemyDeathSound.play(volume);
         }
     }
 
@@ -49,12 +108,10 @@ public class AudioManager {
     }
 
     public void increaseVolume() {
-
         setVolume(volume + 0.1f);
     }
 
     public void decreaseVolume() {
-
         setVolume(volume - 0.1f);
     }
 
@@ -80,6 +137,13 @@ public class AudioManager {
     public void dispose() {
 
         backgroundMusic.dispose();
+
         attackSound.dispose();
+        buildSound.dispose();
+
+        playerHitSound.dispose();
+        enemyAttackSound.dispose();
+        enemyHitSound.dispose();
+        enemyDeathSound.dispose();
     }
 }

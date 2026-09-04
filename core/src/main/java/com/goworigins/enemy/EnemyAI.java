@@ -4,6 +4,7 @@ import com.goworigins.animation.EnemyAnimationState;
 import com.goworigins.player.Player;
 import com.goworigins.collision.CollisionManager;
 import com.goworigins.building.BuildingSystem;
+import com.goworigins.render.EnemyRenderer;
 
 public class EnemyAI {
 
@@ -17,10 +18,12 @@ public class EnemyAI {
 
     private final CollisionManager collisionManager;
     private final BuildingSystem buildingSystem;
+    private final EnemyRenderer enemyRenderer;
 
-    public EnemyAI( CollisionManager collisionManager, BuildingSystem buildingSystem ) {
+    public EnemyAI( CollisionManager collisionManager, BuildingSystem buildingSystem, EnemyRenderer enemyRenderer ) {
         this.collisionManager = collisionManager;
         this.buildingSystem = buildingSystem;
+        this.enemyRenderer = enemyRenderer;
     }
     public void update(Enemy enemy, Player player, float delta) {
 
@@ -77,8 +80,12 @@ public class EnemyAI {
         float directionX = dx / distance;
         float directionY = dy / distance;
 
+        enemyRenderer.setFacing(directionX);
+
         float deltaX = directionX * movementSpeed * delta;
         float deltaY = directionY * movementSpeed * delta;
+
+        enemyRenderer.setFacing(directionX);
 
         float newX = enemy.getX() + deltaX;
 

@@ -14,11 +14,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.goworigins.audio.AudioManager;
 
 public class MenuScreen implements Screen {
 
     private final Game game;
-
+    private AudioManager audioManager;
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
 
@@ -62,6 +63,8 @@ public class MenuScreen implements Screen {
         );
 
         layout = new GlyphLayout();
+
+        audioManager = new AudioManager("audio/music/menu.mp3");
 
         kratosTexture = new Texture("sprites/Characters/Kratos/idle/kratosIdle.png");
         // Nearest para mantener el estilo pixel art nítido (sin desenfocar el sprite)
@@ -195,5 +198,6 @@ public class MenuScreen implements Screen {
         titleFont.dispose();
         optionFont.dispose();
         kratosTexture.dispose();
+        audioManager.dispose();
     }
 }

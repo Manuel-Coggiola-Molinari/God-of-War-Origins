@@ -62,11 +62,11 @@ public class EnemyRenderer {
     public void setFacing(float directionX) {
 
         if (directionX < 0) {
-            facingLeft = true;
+            facingLeft = false;
         }
 
         if (directionX > 0) {
-            facingLeft = false;
+            facingLeft = true;
         }
     }
 }

@@ -7,8 +7,8 @@ public class Building {
     private float x;
     private float y;
 
-    private final float width = 80;
-    private final float height = 80;
+    private final float width = 400;
+    private final float height = 400;
 
     private final BuildingType type;
     private final Rectangle hitbox;

@@ -11,7 +11,7 @@ public class BuildingSystem {
     private final List<Building> buildings = new ArrayList<>();
     private BuildingType selectedType = BuildingType.REFUGIO;
 
-    public void build(Player player, CollisionManager collisionManager) {
+    public boolean build(Player player, CollisionManager collisionManager) {
 
             float x = player.getX() + 100;
             float y = player.getY();
@@ -25,7 +25,7 @@ public class BuildingSystem {
             newBuilding.getHeight()
         )) {
             System.out.println("No se puede construir aqui");
-            return;
+            return false;
         }
         if (!canBuildAt(
             newBuilding.getX(),
@@ -34,10 +34,11 @@ public class BuildingSystem {
             newBuilding.getHeight()
         )) {
             System.out.println("No se puede construir sobre otra estructura");
-            return;
+            return false;
         }
         buildings.add(newBuilding);
         System.out.println("Estructura construida");
+        return true;
     }
 
     public List<Building> getBuildings() {

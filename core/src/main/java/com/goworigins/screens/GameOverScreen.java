@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.goworigins.audio.AudioManager;
 
 public class GameOverScreen implements Screen {
 
@@ -20,7 +21,7 @@ public class GameOverScreen implements Screen {
     private BitmapFont titleFont;
     private BitmapFont subtitleFont;
     private GlyphLayout layout;
-
+    private AudioManager audioManager;
     private OrthographicCamera camera;
     private Viewport viewport;
 
@@ -38,6 +39,8 @@ public class GameOverScreen implements Screen {
         subtitleFont.getData().setScale(1.3f);
 
         layout = new GlyphLayout();
+
+        audioManager = new AudioManager("audio/music/gameOver.mp3");
     }
 
     @Override
@@ -97,5 +100,6 @@ public class GameOverScreen implements Screen {
         batch.dispose();
         titleFont.dispose();
         subtitleFont.dispose();
+        audioManager.dispose();
     }
 }

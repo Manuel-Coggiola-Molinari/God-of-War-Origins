@@ -46,17 +46,10 @@ public class PlayerRenderer {
                 drawFrame.flip(true, false);
             }
 
-            float playerCenterX =
-                player.getX() + 25;
-
-            float playerCenterY =
-                player.getY() + 25;
-
             float drawX =
-                playerCenterX - width / 2f;
+                player.getX() + 25f - width / 2f;
 
-            float drawY =
-                playerCenterY - height / 2f;
+            float drawY = player.getY();
 
             batch.draw(
                 drawFrame,
