@@ -104,7 +104,7 @@ gradlew.bat lwjgl3:run
 
 ## Video de demostración
 
-[Enlace al video](PENDIENTE)
+[https://drive.google.com/file/d/1TfikYq2Kgt0qR6N8fp6HI-rI3opJKiTl/view?usp=sharing]
 
 ---
 
