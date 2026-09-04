@@ -66,7 +66,7 @@ public class MenuScreen implements Screen {
 
         audioManager = new AudioManager("audio/music/menu.mp3");
 
-        kratosTexture = new Texture("sprites/Characters/Kratos/idle/kratosIdle.png");
+        kratosTexture = new Texture("sprites/Characters/Kratos/idle.png");
         // Nearest para mantener el estilo pixel art nítido (sin desenfocar el sprite)
         kratosTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
     }

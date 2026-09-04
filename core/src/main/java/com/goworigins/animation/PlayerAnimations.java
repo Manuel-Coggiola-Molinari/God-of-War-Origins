@@ -12,36 +12,20 @@ public class PlayerAnimations {
 
     public PlayerAnimations() {
         currentState = AnimationState.IDLE;
-        String[] idleFrames = {
-            "assets/sprites/Characters/Kratos/idle/kratosIdle.png"
-        };
-        setIdle(new AnimationManager(idleFrames, 0.15f));
+        setIdle(new AnimationManager("assets/sprites/Characters/Kratos/idle.png", 94, 100, 0.15f));
 
-        AnimationManager walkAnimation = new AnimationManager(
-                "assets/sprites/Characters/Kratos/walk/walk.png",
-                85, 100, 0.15f);
+        AnimationManager walkAnimation = new AnimationManager("assets/sprites/Characters/Kratos/walk.png", 85, 100, 0.15f);
         setWalk(walkAnimation);
 
-        String[] attackFrames = {
-            "assets/sprites/Characters/Kratos/attack/attack1.png",
-            "assets/sprites/Characters/Kratos/attack/attack2.png",
-            "assets/sprites/Characters/Kratos/attack/attack3.png",
-            "assets/sprites/Characters/Kratos/attack/attack4.png",
-            "assets/sprites/Characters/Kratos/attack/attack5.png"
-        };
-        AnimationManager attackAnimation = new AnimationManager(attackFrames, 0.1f);
+        AnimationManager attackAnimation = new AnimationManager("assets/sprites/Characters/Kratos/attack.png", 125, 100, 0.1f);
         attackAnimation.setLooping(false);
         setAttack(attackAnimation);
 
-        String[] damageFrames = { "assets/sprites/Characters/Kratos/damage/damage.png" };
-
-        AnimationManager damageAnimation = new AnimationManager(damageFrames, 0.5f);
+        AnimationManager damageAnimation = new AnimationManager("assets/sprites/Characters/Kratos/damage.png", 103, 100, 0.5f);
         damageAnimation.setLooping(false);
         setDamage(damageAnimation);
 
-        String[] deathFrames = { "assets/sprites/Characters/Kratos/death/death.png" };
-
-        AnimationManager deathAnimation = new AnimationManager(deathFrames, 0.15f);
+        AnimationManager deathAnimation = new AnimationManager("assets/sprites/Characters/Kratos/death.png", 100, 70, 0.15f);
         deathAnimation.setLooping(false);
         setDeath(deathAnimation);
     }
