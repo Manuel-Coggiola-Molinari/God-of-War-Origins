@@ -112,6 +112,8 @@ gradlew.bat lwjgl3:run
 
 La documentación del proyecto se encuentra en la [**Wiki**](https://github.com/Manuel-Coggiola-Molinari/God-of-War-Origins/wiki) del repositorio.
 
+Por otra parte, estamos usando como metodología ágil el [**Tablero Kanban**](https://trello.com/b/nwgN8pOj/god-of-war-origins) en la página de Trello
+
 ---
 
 ## Licencia
