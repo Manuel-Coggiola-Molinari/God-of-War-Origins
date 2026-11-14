@@ -10,10 +10,12 @@ public class GameInput extends InputAdapter {
     private boolean left;
     private boolean right;
     private boolean attackPressed;
+    private boolean interactPressed;
     private boolean buildPressed;
     private boolean mutePressed = false;
     private boolean volumeUpPressed = false;
     private boolean volumeDownPressed = false;
+    private boolean ragePressed;
 
     @Override
     public boolean keyDown(int keycode) {
@@ -36,7 +38,15 @@ public class GameInput extends InputAdapter {
                 break;
 
             case Input.Keys.E:
+                interactPressed = true;
+                break;
+
+            case Input.Keys.B:
                 buildPressed = true;
+                break;
+
+            case Input.Keys.Z:
+                ragePressed = true;
                 break;
 
             case Input.Keys.Y:
@@ -57,6 +67,14 @@ public class GameInput extends InputAdapter {
     public boolean consumeBuild() {
         if (buildPressed) {
             buildPressed = false;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean consumeInteract() {
+        if (interactPressed) {
+            interactPressed = false;
             return true;
         }
         return false;
@@ -141,6 +159,15 @@ public class GameInput extends InputAdapter {
 
         if (volumeDownPressed) {
             volumeDownPressed = false;
+            return true;
+        }
+
+        return false;
+    }
+    public boolean consumeRage() {
+
+        if (ragePressed) {
+            ragePressed = false;
             return true;
         }
 

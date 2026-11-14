@@ -13,6 +13,8 @@ public class Player {
     private int health = 100;
     private boolean damaged = false;
 
+    private boolean invulnerable = false;
+
     public Player(float x, float y, float speed) {
         this.x = x;
         this.y = y;
@@ -27,6 +29,7 @@ public class Player {
 
         animation.updateDirection(deltaX, deltaY);
     }
+
     public void setPosition(float x, float y) {
         this.x = x;
         this.y = y;
@@ -51,7 +54,6 @@ public class Player {
     public float getDirectionX() {
 
         switch (animation.getDirection()) {
-
             case LEFT:
                 return -1f;
 
@@ -66,7 +68,6 @@ public class Player {
     public float getDirectionY() {
 
         switch (animation.getDirection()) {
-
             case DOWN:
                 return -1f;
 
@@ -84,18 +85,33 @@ public class Player {
 
     public void takeDamage(int damage) {
 
+        if (invulnerable || !isAlive()) {
+            return;
+        }
+
         health -= damage;
 
-        if (health < 0)
-        { health = 0; }
+        if (health < 0) {
+            health = 0;
+        }
 
         damaged = true;
     }
+
+    public void setInvulnerable(boolean invulnerable) {
+        this.invulnerable = invulnerable;
+    }
+
+    public boolean isInvulnerable() {
+        return invulnerable;
+    }
+
     public boolean consumeDamage() {
 
         if (damaged) {
             damaged = false;
-            return true; }
+            return true;
+        }
 
         return false;
     }

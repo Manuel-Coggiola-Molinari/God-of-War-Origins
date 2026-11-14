@@ -1,3 +1,4 @@
+
 package com.goworigins.animation;
 
 import com.badlogic.gdx.graphics.Texture;
@@ -6,8 +7,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class AnimationManager {
 
     private final TextureRegion[] frames;
+    private final Texture[] textures;
 
-    private float frameDuration;
+    private final float frameDuration;
     private float stateTime = 0f;
 
     private boolean looping = true;
@@ -17,13 +19,21 @@ public class AnimationManager {
         float frameDuration
     ) {
 
+        if (framePaths == null || framePaths.length == 0) {
+            throw new IllegalArgumentException("No hay frames para cargar.");
+        }
+
+        if (frameDuration <= 0) {
+            throw new IllegalArgumentException("La duración de frame debe ser mayor a cero.");
+        }
+
         frames = new TextureRegion[framePaths.length];
+        textures = new Texture[framePaths.length];
 
         for (int i = 0; i < framePaths.length; i++) {
 
-            Texture texture = new Texture(framePaths[i]);
-
-            frames[i] = new TextureRegion(texture);
+            textures[i] = new Texture(framePaths[i]);
+            frames[i] = new TextureRegion(textures[i]);
         }
 
         this.frameDuration = frameDuration;
@@ -36,14 +46,18 @@ public class AnimationManager {
         float frameDuration
     ) {
 
-        Texture texture = new Texture(spritesheetPath);
+        if (frameWidth <= 0 || frameHeight <= 0 || frameDuration <= 0) {
+            throw new IllegalArgumentException("Dimensiones o duración inválidas.");
+        }
 
-        TextureRegion[][] tmp =
-            TextureRegion.split(
-                texture,
-                frameWidth,
-                frameHeight
-            );
+        textures = new Texture[1];
+        textures[0] = new Texture(spritesheetPath);
+
+        TextureRegion[][] tmp = TextureRegion.split(
+            textures[0],
+            frameWidth,
+            frameHeight
+        );
 
         int rows = tmp.length;
         int columns = tmp[0].length;
@@ -74,9 +88,9 @@ public class AnimationManager {
         if (looping) {
             frameNumber %= frames.length;
         } else {
-
             frameNumber = Math.min(frameNumber, frames.length - 1);
         }
+
         return frames[frameNumber];
     }
 
@@ -95,5 +109,14 @@ public class AnimationManager {
 
     public void setLooping(boolean looping) {
         this.looping = looping;
+    }
+
+    public void dispose() {
+
+        for (Texture texture : textures) {
+            if (texture != null) {
+                texture.dispose();
+            }
+        }
     }
 }

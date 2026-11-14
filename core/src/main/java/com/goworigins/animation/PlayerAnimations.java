@@ -12,20 +12,20 @@ public class PlayerAnimations {
 
     public PlayerAnimations() {
         currentState = AnimationState.IDLE;
-        setIdle(new AnimationManager("assets/sprites/Characters/Kratos/idle.png", 94, 100, 0.15f));
+        setIdle(new AnimationManager("sprites/Characters/Kratos/idle.png", 94, 100, 0.15f));
 
-        AnimationManager walkAnimation = new AnimationManager("assets/sprites/Characters/Kratos/walk.png", 85, 100, 0.15f);
+        AnimationManager walkAnimation = new AnimationManager("sprites/Characters/Kratos/walk.png", 85, 100, 0.15f);
         setWalk(walkAnimation);
 
-        AnimationManager attackAnimation = new AnimationManager("assets/sprites/Characters/Kratos/attack.png", 125, 100, 0.1f);
+        AnimationManager attackAnimation = new AnimationManager("sprites/Characters/Kratos/attack.png", 125, 100, 0.1f);
         attackAnimation.setLooping(false);
         setAttack(attackAnimation);
 
-        AnimationManager damageAnimation = new AnimationManager("assets/sprites/Characters/Kratos/damage.png", 103, 100, 0.5f);
+        AnimationManager damageAnimation = new AnimationManager("sprites/Characters/Kratos/damage.png", 103, 100, 0.5f);
         damageAnimation.setLooping(false);
         setDamage(damageAnimation);
 
-        AnimationManager deathAnimation = new AnimationManager("assets/sprites/Characters/Kratos/death.png", 100, 70, 0.15f);
+        AnimationManager deathAnimation = new AnimationManager("sprites/Characters/Kratos/death.png", 100, 70, 0.15f);
         deathAnimation.setLooping(false);
         setDeath(deathAnimation);
     }

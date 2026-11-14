@@ -15,23 +15,28 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.goworigins.animation.AnimationState;
-import com.goworigins.animation.EnemyAnimationState;
 import com.goworigins.animation.PlayerAnimations;
 import com.goworigins.audio.AudioManager;
 import com.goworigins.building.Building;
 import com.goworigins.building.BuildingSystem;
+import com.goworigins.enemy.*;
 import com.goworigins.render.BuildingRenderer;
+import com.goworigins.render.DraugrRenderer;
+import com.goworigins.render.PlayerRenderer;
+import com.goworigins.render.ResourceRenderer;
+import com.goworigins.render.PesadillaRenderer;
 import com.goworigins.collision.CollisionManager;
 import com.goworigins.combat.CombatSystem;
-import com.goworigins.enemy.Enemy;
-import com.goworigins.enemy.EnemyAI;
 import com.goworigins.hud.GameHUD;
 import com.goworigins.input.GameInput;
 import com.goworigins.player.Player;
-import com.goworigins.render.EnemyRenderer;
-import com.goworigins.render.PlayerRenderer;
+import com.goworigins.resources.ResourceManager;
+import com.goworigins.resources.ResourceNode;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 public class GameScreen implements Screen {
 
@@ -48,7 +53,9 @@ public class GameScreen implements Screen {
     private final float cameraMargin = 150f;
 
     private PlayerRenderer playerRenderer;
-    private EnemyRenderer enemyRenderer;
+    private DraugrRenderer draugrRenderer;
+    private PesadillaRenderer pesadillaRenderer;
+    private ResourceRenderer resourceRenderer;
     private SpriteBatch batch;
 
     private TiledMap map;
@@ -56,14 +63,15 @@ public class GameScreen implements Screen {
 
     private CollisionManager collisionManager;
 
-    private static final float MAP_WIDTH = 1600f;
-    private static final float MAP_HEIGHT = 1600f;
+    private static final float MAP_WIDTH = 6144f;
+    private static final float MAP_HEIGHT = 2816f;
     private static final float PLAYER_SIZE = 50f;
 
     private CombatSystem combatSystem;
 
-    private Enemy enemy;
-    private EnemyAI enemyAI;
+    private final List<Enemy> enemies = new ArrayList<>();
+    private final Map<Draugr, DraugrAI> draugrAIs = new HashMap<>();
+    private final Map<Pesadilla, PesadillaAI> pesadillas = new HashMap<>();
 
     private float facingX = 0;
     private float facingY = -1;
@@ -72,6 +80,7 @@ public class GameScreen implements Screen {
     private OrthographicCamera hudCamera;
 
     private BuildingSystem buildingSystem;
+    private ResourceManager resourceManager;
     private BuildingRenderer buildingRenderer;
     private PlayerAnimations playerAnimations;
 
@@ -79,6 +88,7 @@ public class GameScreen implements Screen {
 
     private float deathTimer = 0f;
     private static final float DEATH_SCREEN_DELAY = 1.5f;
+
 
     public GameScreen(Game game) {
 
@@ -105,7 +115,8 @@ public class GameScreen implements Screen {
             batch
         );
 
-        enemyRenderer = new EnemyRenderer(batch);
+        draugrRenderer = new DraugrRenderer(batch);
+        pesadillaRenderer = new PesadillaRenderer(batch);
 
         // =====================================================
         // AUDIO
@@ -178,20 +189,106 @@ public class GameScreen implements Screen {
         combatSystem = new CombatSystem();
 
         buildingSystem = new BuildingSystem();
+        resourceRenderer = new ResourceRenderer();
+        resourceManager = new ResourceManager();
+
+        resourceManager.agregarNodo(new ResourceNode(ResourceNode.ResourceType.ARBOL, 500, 300, 64, 64, 10, 2));
+        resourceManager.agregarNodo(new ResourceNode(ResourceNode.ResourceType.ROCA, 800, 300, 64, 64, 8, 2));
+        resourceManager.agregarNodo(new ResourceNode(ResourceNode.ResourceType.MINERAL, 1100, 300, 64, 64, 6, 1));
+
         buildingRenderer = new BuildingRenderer(batch);
         // =====================================================
         // ENEMIGO
         // =====================================================
 
-        enemy = new Enemy(
-            500,
-            300,
-            100
+        spawnEnemies();
+    }
+    private void spawnEnemies() {
+
+        int enemiesToSpawn = 10;
+
+        int[] radii = {220, 250, 280, 290};
+
+        for (int radius : radii) {
+
+            if (enemies.size() >= enemiesToSpawn) {
+                break;
+            }
+
+            for (int i = 0; i < 24 && enemies.size() < enemiesToSpawn; i++) {
+
+                double angle = (2 * Math.PI * i) / 24;
+
+                float spawnX = player.getX() + 25
+                    + (float) Math.cos(angle) * radius - 25;
+
+                float spawnY = player.getY() + 25
+                    + (float) Math.sin(angle) * radius - 25;
+
+                // Comprobar límites del mapa.
+                if (
+                    spawnX < 0 ||
+                        spawnY < 0 ||
+                        spawnX + 50 > MAP_WIDTH ||
+                        spawnY + 50 > MAP_HEIGHT
+                ) {
+                    continue;
+                }
+
+                // Comprobar colisiones con el mapa y construcciones.
+                if (
+                    !collisionManager.canMoveTo(spawnX, spawnY, 50, 50) ||
+                        !buildingSystem.canMoveTo(spawnX, spawnY, 50, 50)
+                ) {
+                    continue;
+                }
+
+                // Evitar que dos enemigos aparezcan superpuestos.
+                boolean overlaps = false;
+
+                for (Enemy existing : enemies) {
+
+                    float dx = existing.getCenterX() - (spawnX + 25);
+                    float dy = existing.getCenterY() - (spawnY + 25);
+
+                    if (Math.sqrt(dx * dx + dy * dy) < 55) {
+                        overlaps = true;
+                        break;
+                    }
+                }
+
+                if (overlaps) {
+                    continue;
+                }
+
+                Draugr newEnemy = new Draugr(
+                    spawnX,
+                    spawnY,
+                    100,
+                    EnemyType.COMMON
+                );
+
+                enemies.add(newEnemy);
+
+                draugrAIs.put(newEnemy, new DraugrAI(collisionManager, buildingSystem));
+            }
+        }
+
+        // Generar una Pesadilla cerca del jugador.
+        float pesadillaX = player.getX() + 300;
+        float pesadillaY = player.getY() + 150;
+
+        Pesadilla pesadilla = new Pesadilla(
+            pesadillaX,
+            pesadillaY,
+            60
         );
 
-        enemyAI = new EnemyAI(collisionManager, buildingSystem, enemyRenderer);
-    }
+        enemies.add(pesadilla);
+        pesadillas.put(pesadilla, new PesadillaAI());
 
+        System.out.println("Enemigos generados: " + enemies.size());
+    }
     @Override
     public void show() {
 
@@ -428,26 +525,45 @@ public class GameScreen implements Screen {
                 audioManager.playBuildSound();
             }
         }
-
         // =====================================================
-        // IA DEL ENEMIGO
+        // SISTEMA DE COMBATE E IRA ESPARTANA
         // =====================================================
 
-        if (
-            enemy.isAlive()
-                &&
-                player.isAlive()
-        ) {
+        combatSystem.update(delta);
 
-            enemyAI.update(
-                enemy,
-                player,
-                delta
-            );
+        if (player.isAlive() && gameInput.consumeRage()) {
+            combatSystem.activateRage();
         }
 
-        enemy.updateAnimations(delta);
+        player.setInvulnerable(combatSystem.isRageActive());
 
+        // =====================================================
+        // IA DE LOS ENEMIGOS
+        // =====================================================
+
+        for (Enemy currentEnemy : enemies) {
+
+            if (currentEnemy instanceof Pesadilla) {
+
+                Pesadilla pesadilla = (Pesadilla) currentEnemy;
+                PesadillaAI ai = pesadillas.get(pesadilla);
+
+                if (ai != null) {
+                    ai.update(pesadilla, player, delta);
+                }
+
+            } else if (currentEnemy instanceof Draugr) {
+
+                Draugr draugr = (Draugr) currentEnemy;
+                DraugrAI ai = draugrAIs.get(draugr);
+
+                if (player.isAlive() && ai != null) {
+                    ai.update(draugr, player, delta);
+                }
+
+                draugr.updateAnimations(delta);
+            }
+        }
         // =====================================================
         // DAÑO DEL JUGADOR
         // =====================================================
@@ -466,7 +582,6 @@ public class GameScreen implements Screen {
         // SISTEMA DE COMBATE
         // =====================================================
 
-        combatSystem.update(delta);
 
         // =====================================================
         // AUDIO
@@ -490,11 +605,6 @@ public class GameScreen implements Screen {
         // =====================================================
         // ATAQUE
         // =====================================================
-
-        // =====================================================
-// ATAQUE
-// =====================================================
-
         if (
             player.isAlive()
                 &&
@@ -507,33 +617,41 @@ public class GameScreen implements Screen {
 
             audioManager.playAttackSound();
 
-            boolean hit = combatSystem.attack(
+            Enemy hitEnemy = combatSystem.attack(
                 player,
-                enemy,
+                enemies,
                 player.getDirectionX(),
                 player.getDirectionY()
             );
 
-            if (hit) {
+            ResourceNode collected = resourceManager.recolectarCercano(
+                player,
+                facingX,
+                facingY
+            );
 
-                audioManager.playEnemyHitSound();
+            if (collected != null) {
 
-                if (!enemy.isAlive()) {
-                    audioManager.playEnemyDeathSound();
+                System.out.println(
+                    "Recurso recolectado: " + collected.getType()
+                );
+
+                System.out.println(
+                    "Cantidad restante: " + collected.getResources()
+                );
+
+                if (collected.agotado()) {
+                    System.out.println("Recurso agotado");
                 }
             }
 
-            System.out.println(
-                "Vida del enemigo: "
-                    +
-                    enemy.getHealth()
-            );
+            if (hitEnemy != null) {
 
-            if (!enemy.isAlive()) {
+                audioManager.playEnemyHitSound();
 
-                enemy.getAnimations().setState(
-                    EnemyAnimationState.DEATH
-                );
+                if (!hitEnemy.isAlive()) {
+                    audioManager.playEnemyDeathSound();
+                }
             }
         }
 
@@ -604,6 +722,15 @@ public class GameScreen implements Screen {
             camera.position.y +=
                 cameraSpeed * delta;
         }
+        camera.position.x = Math.max(
+            halfWidth,
+            Math.min(camera.position.x, MAP_WIDTH - halfWidth)
+        );
+
+        camera.position.y = Math.max(
+            halfHeight,
+            Math.min(camera.position.y, MAP_HEIGHT - halfHeight)
+        );
 
         camera.update();
 
@@ -634,68 +761,43 @@ public class GameScreen implements Screen {
         mapRenderer.render();
 
         // =====================================================
-        // GRILLA DE REFERENCIA
+        // ENEMIGO + ESTRUCTURAS + RECURSOS
         // =====================================================
 
-        shapeRenderer.setProjectionMatrix(
-            camera.combined
-        );
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        shapeRenderer.begin(
-            ShapeRenderer.ShapeType.Line
-        );
+        resourceRenderer.render(resourceManager, camera);
 
-        shapeRenderer.setColor(
-            1,
-            1,
-            1,
-            1
-        );
+        batch.begin();
+        // Dibujar las barras de vida de los enemigos.
+        for (Enemy currentEnemy : enemies) {
 
-        for (
-            int x = -2000;
-            x <= 2000;
-            x += 100
-        ) {
+            if (currentEnemy instanceof Pesadilla) {
+                pesadillaRenderer.render((Pesadilla) currentEnemy);
 
-            shapeRenderer.line(
-                x,
-                -2000,
-                x,
-                2000
-            );
+            } else if (currentEnemy instanceof Draugr) {
+                draugrRenderer.render((Draugr) currentEnemy);
+            }
+        }
+        batch.end();
+
+        batch.begin();
+
+        for (Map.Entry<Pesadilla, PesadillaAI> entry : pesadillas.entrySet()) {
+
+            Pesadilla pesadilla = entry.getKey();
+            PesadillaAI pesadillaAI = entry.getValue();
+
+            for (PesadillaProjectile projectile : pesadillaAI.getProjectiles()) {
+                pesadillaRenderer.renderProjectile(
+                    projectile,
+                    pesadilla.getAnimations()
+                );
+            }
         }
 
-        for (
-            int y = -2000;
-            y <= 2000;
-            y += 100
-        ) {
-
-            shapeRenderer.line(
-                -2000,
-                y,
-                2000,
-                y
-            );
-        }
-
-        shapeRenderer.end();
-
-        // =====================================================
-        // ENEMIGO + ESTRUCTURAS
-        // =====================================================
-
-        shapeRenderer.begin(
-            ShapeRenderer.ShapeType.Filled
-        );
-
-        if (enemy.isAlive()) {
-
-            gameHUD.renderEnemyHealth(
-                enemy
-            );
-        }
+        batch.end();
 
         List<Building> buildings = buildingSystem.getBuildings();
 
@@ -715,10 +817,6 @@ public class GameScreen implements Screen {
             buildingRenderer.render(building);
         }
 
-        enemyRenderer.render(
-            enemy
-        );
-
         playerRenderer.render(
             player
         );
@@ -737,9 +835,7 @@ public class GameScreen implements Screen {
             ShapeRenderer.ShapeType.Filled
         );
 
-        gameHUD.render(
-            player
-        );
+        gameHUD.render(player, combatSystem, delta);
 
         shapeRenderer.end();
 
@@ -808,5 +904,13 @@ public class GameScreen implements Screen {
         map.dispose();
         buildingRenderer.dispose();
         audioManager.dispose();
+        resourceRenderer.dispose();
+        for (Enemy enemy : enemies) {
+            if (enemy instanceof Pesadilla) {
+                ((Pesadilla) enemy).dispose();
+            }
+        }
+        pesadillas.clear();
+        draugrAIs.clear();
     }
 }
